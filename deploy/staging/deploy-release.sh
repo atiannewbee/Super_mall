@@ -57,8 +57,14 @@ elif [[ ! -s "${APP_RELEASE}/super-mall.jar" ||
   exit 1
 fi
 
-OLD_APP=$(readlink -f "${APP_CURRENT}" 2>/dev/null || true)
-OLD_WEB=$(readlink -f "${WEB_CURRENT}" 2>/dev/null || true)
+OLD_APP=
+OLD_WEB=
+if [[ -L "${APP_CURRENT}" ]]; then
+  OLD_APP=$(readlink -e "${APP_CURRENT}" 2>/dev/null || true)
+fi
+if [[ -L "${WEB_CURRENT}" ]]; then
+  OLD_WEB=$(readlink -e "${WEB_CURRENT}" 2>/dev/null || true)
+fi
 
 switch_link() {
   local target=$1
