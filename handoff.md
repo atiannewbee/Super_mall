@@ -1,132 +1,187 @@
-# Handoff — Spring Boot Demo1
+# Handoff — Super Mall
 
-## 项目概要
+## 1. 当前定位
 
-这是一个**教学性质**的 Spring Boot 项目，面向 Java 基础入门、零框架经验的新手。项目从零开始逐步构建，当前已打通 **Controller → Service → Repository → MySQL** 完整链路，实现了用户表的基础 CRUD。
+Super Mall 是一个可在本地完整运行的全栈电商 MVP，不再是早期的用户 CRUD 教学 Demo。
 
-- **Spring Boot 版本：** 4.1.0（注意：非 3.x，API 基于 Jakarta EE）
-- **Java：** 17
-- **构建工具：** Maven（wrapper 已就绪，`./mvnw`）
-- **IDE：** IntelliJ IDEA
+当前阶段包括：
 
----
+- Vue 3 消费者商城；
+- Vue 3 独立商家运营端；
+- Spring Boot 4.1.0 + Java 17 后端；
+- MySQL + Flyway 版本化数据库；
+- 消费者与商家双 JWT 身份体系；
+- 商品、SKU、库存、购物车、订单、模拟支付、支付宝适配、物流与售后；
+- GitHub CI 和 `main` 分支保护。
 
-## 技术栈
+下一阶段才包括公网部署、支付宝真实联调、微信支付、物流承运商回调、Python AI 客服、运营 Agent 和数据中台。
 
-| 层面 | 选型 | 说明 |
-|------|------|------|
-| 框架 | Spring Boot 4.1.0 | `spring-boot-starter-webmvc` |
-| ORM | Spring Data JPA / Hibernate | `spring-boot-starter-data-jpa` |
-| 数据库 | MySQL | 驱动 `mysql-connector-j` |
-| 模板引擎 | 尚未引入 | 下一步计划用 Thymeleaf |
-| 安全 | 尚未引入 | 之后会引入 Spring Security |
+## 2. 仓库结构
 
----
-
-## 当前进度
-
-### 已完成 ✅
-
-- [x] 项目骨架生成（Spring Initializr）
-- [x] Hello World 级别的 REST 接口（`HelloController` 已删除，仅用于演示）
-- [x] 标准分层架构建立：Controller / Service / Repository / Entity
-- [x] 用户 CRUD 完整接口：
-  - `GET    /users`     — 查询全部
-  - `GET    /users/{id}` — 查询单个（含 404 处理）
-  - `POST   /users`     — 新增
-  - `PUT    /users/{id}` — 更新
-  - `DELETE /users/{id}` — 删除
-- [x] MySQL 数据持久化（自动建表 `ddl-auto=update`）
-- [x] **构造器注入**作为依赖注入方式（遵循 Spring 官方推荐，`private final` + 构造器）
-
-### 待完成 📋
-
-- [ ] DTO 层引入（目前 Entity 直接暴露给 Controller）
-- [ ] 全局异常处理（`@ControllerAdvice`，替代 `RuntimeException` 裸抛）
-- [ ] 参数校验（`@Valid` / `@NotBlank` 等 Bean Validation）
-- [ ] 前端页面（Thymeleaf）
-- [ ] 用户认证与授权（Spring Security）
-- [ ] 单元测试覆盖
-
----
-
-## 项目结构
-
-```
-src/main/java/com/share/spring_boot_demo1/
-├── SpringBootDemo1Application.java    ← 启动入口，@SpringBootApplication
-├── entity/
-│   └── User.java                      ← @Entity，对应 MySQL users 表
-├── repository/
-│   └── UserRepository.java            ← 接口，继承 JpaRepository<User, Long>
-├── Service/                           ← ⚠️ 注意：大写 S，非主流约定
-│   └── UserService.java               ← @Service，业务逻辑层
-└── Controller/                        ← ⚠️ 注意：大写 C，非主流约定
-    └── UserController.java            ← @RestController，接待 HTTP 请求
-
-src/main/resources/
-├── application.properties             ← MySQL 连接 + JPA 配置
-├── static/                            ← 静态资源（空）
-└── templates/                         ← 模板（空，Thymeleaf 预留）
+```text
+Super_mall/
+├─ apps/
+│  ├─ storefront/       Vue 3 消费者商城，开发端口 5173
+│  └─ merchant/         Vue 3 商家运营端，开发端口 5174
+├─ src/
+│  ├─ main/java/        Spring Boot 业务代码
+│  ├─ main/resources/   配置与 Flyway 迁移
+│  └─ test/java/        后端集成测试
+├─ docs/                API、数据库、支付、架构和安全文档
+├─ .github/workflows/   全栈 CI
+├─ pom.xml
+└─ mvnw.cmd
 ```
 
-> **⚠️ 目录命名问题：** 包路径中 `Service` 和 `Controller` 用了大写首字母，不符合 Java 包名全小写的惯例。这是早期手误，Codex 接手后建议在合适的时机统一重命名为小写（`service`、`controller`），并同步修改所有 import 语句。
+## 3. 已完成能力
 
----
+### 消费者端
 
-## 代码约定
+- 邮箱或手机号注册、登录；
+- 首页、分类、搜索、商品详情和 SKU 选择；
+- 收藏、购物车、地址和个人资料；
+- 创建订单、订单列表、订单详情和取消订单；
+- 模拟支付宝、模拟微信支付；
+- 支付结果查询、物流时间线和确认收货；
+- 退款、退货退款、换货申请及退货物流填写；
+- AI 客服交互面板原型。
 
-| 约定 | 说明 |
-|------|------|
-| 依赖注入 | 一律**构造器注入**，`private final` 字段，不使用 `@Autowired` 字段注入 |
-| 层级职责 | Controller 只做请求接待，Service 做业务逻辑，Repository 做数据访问 |
-| 实体命名 | `@Entity` 类放在 `entity/` 包，表名用 `@Table` 显式指定 |
-| 数据库 | `ddl-auto=update`，生产环境慎用，当前教学阶段可接受 |
-| 异常处理 | 目前直接抛 `RuntimeException`，后续需要引入统一异常处理 |
+AI 客服面板当前使用本地规则回复，并明确提示未连接真实订单和 AI 模型，不能将其视为已经接入外部 Agent。
 
----
+### 商家端
 
-## 数据库
+- 独立商家登录、首次登录强制改密；
+- 经营看板、订单查询和订单详情；
+- 开始拣货、填写物流并确认发货；
+- 库存查询与低库存筛选；
+- 商品新增、修改和软删除；
+- 消费者与商家令牌隔离、商户数据隔离和操作日志。
 
-- **数据库名：** `demo1`（连接串自带 `createDatabaseIfNotExist=true`，首次启动自动创建）
-- **表名：** `users`（由 Hibernate 根据 `@Entity` 自动创建/更新）
-- **字段：** `id`（BIGINT, PK, AUTO_INCREMENT）、`name`（VARCHAR, NOT NULL）、`email`（VARCHAR, UNIQUE）
-- **密码：** `你的密码`（已脱敏，Codex 需告知用户替换为实际密码）
+当前默认只运营一家商户。数据模型保留 `OWNER`、`OPERATOR`、`WAREHOUSE` 三种权限，但首版可以只使用主管账号，不要求另设仓库人员。
 
-连接串：
+### 后端与数据库
+
+- Controller → Service → Repository 分层；
+- DTO、Bean Validation、统一业务异常和稳定错误 JSON；
+- BCrypt 密码哈希、JWT 认证、账号状态实时校验；
+- 服务端计价、订单幂等、库存原子锁定与释放；
+- 支付单、支付通知幂等、支付宝 RSA2 验签和主动查询；
+- 订单、履约、售后状态机；
+- Flyway V1～V5 管理业务结构和演示目录数据；
+- Hibernate 使用 `ddl-auto=validate`，不自动改表。
+
+## 4. 支付边界
+
+本地前端默认使用受控模拟支付：
+
+- `VITE_PAYMENT_MODE=mock`
+- `PAYMENT_SANDBOX_ENABLED=true`
+
+模拟支付不会产生真实扣款，只用于验证下单、支付成功、库存变化和商家履约链路。
+
+支付宝 provider adapter 已实现，但真实联调仍需要：
+
+1. 可被支付宝访问的 HTTPS 异步通知地址；
+2. 支付宝沙箱或正式 AppID；
+3. 应用私钥、支付宝公钥及可选 SellerID；
+4. `ALIPAY_ENABLED=true`；
+5. `PAYMENT_SANDBOX_ENABLED=false`。
+
+生产环境不得开放模拟支付接口。微信支付尚未接入。
+
+## 5. 数据库约定
+
+- 默认开发库：`super_mall`；
+- 自动测试库：`super_mall_test`；
+- 本地机密配置：`.env.properties`，该文件禁止提交；
+- 已执行的 V1～V5 迁移不可原地修改；
+- 后续结构变更必须新增 V6、V7 等迁移；
+- 生产环境使用低权限数据库账号，不使用 root；
+- 上线前必须验证数据库备份可以恢复。
+
+数据库详情见 [docs/database/README.md](docs/database/README.md)。
+
+## 6. 本地启动
+
+先复制 `.env.properties.example` 为 `.env.properties`，填写 MySQL 密码、消费者 JWT 密钥和商家 JWT 密钥。两个 JWT 密钥必须不同且均至少 32 字节。
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-17"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+.\mvnw.cmd spring-boot:run
 ```
-jdbc:mysql://localhost:3306/demo1?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&createDatabaseIfNotExist=true
+
+后端健康检查：
+
+```text
+GET http://localhost:8080/actuator/health
 ```
 
----
+消费者端：
 
-## 已知问题
+```powershell
+Set-Location apps/storefront
+npm ci
+npm run dev
+```
 
-1. **包名大小写：** `Service/` 和 `Controller/` 大写，应统一为小写
-2. **未使用的 import：** `UserService.java` 中有遗留的 `AtomicLong`、`Map`、`Collections` 导入（来自早期 Map 存储方案）
-3. **方法命名：** `UserService.getByid` 应为 `getById`（驼峰不规范）
-4. **构造器末尾多余分号：** `UserService` 构造器后有一个 `;`
-5. **无参数校验：** `create` 和 `update` 未校验 `name`/`email` 是否为空
-6. **无全局异常处理：** 直接抛 `RuntimeException`，前端收到 500 而非语义化的错误 JSON
+商家端：
 
----
+```powershell
+Set-Location apps/merchant
+npm ci
+npm run dev
+```
 
-## 学习路线上下文
+## 7. 测试与验收
 
-这是一个初学者的教学项目，讲解节奏强调"先跑通、再理解、最后规范"。Codex 在接手时应：
+```powershell
+.\mvnw.cmd clean test
 
-- 保持代码增量小、每次只改一个概念
-- 每个新概念（注解、设计模式）给出"大白话解释"
-- 改动前告知用户要改哪些文件、各自的作用
-- 不在非必要情况下引入新的第三方库或复杂抽象
-- 用户偏好：**自己手动敲代码**，所以只给出需要创建/修改的文件和代码清单，不代为操作
+Set-Location apps/storefront
+npm ci
+npm run test:run
+npm run build
 
----
+Set-Location ../merchant
+npm ci
+npm run test:run
+npm run build
+```
 
-## 下一步建议
+GitHub Actions 会在 PR 和推送到 `main` 时执行同等的后端、消费者端和商家端验证。`main` 已配置为必须通过 PR、严格状态检查和讨论解决后才能合并。
 
-1. **清理当前代码**：修正包名大小写、删除无用 import、统一方法命名
-2. **引入 DTO**：创建 `dto/` 包，用 `CreateUserRequest` / `UpdateUserRequest` 隔离 Entity 与 Controller
-3. **参数校验**：在 DTO 上加 `@NotBlank`、`@Email` 等注解，Controller 方法参数加 `@Valid`
-4. **全局异常处理**：创建 `@ControllerAdvice` 类，统一返回错误 JSON
-5. **Thymeleaf 前端**：`pom.xml` 引入 `spring-boot-starter-thymeleaf`，做简单的用户列表页面
+## 8. 配置与安全注意事项
+
+- 不提交 `.env.properties`、数据库密码、JWT 密钥或支付私钥；
+- 消费者 JWT 与商家 JWT 不得共用密钥、签发方或受众；
+- 商家初始账号由环境变量创建，首次登录后必须修改密码；
+- 完成首次建号后，从服务器环境删除初始商家密码；
+- 金额、库存、订单状态和支付结果只信任服务端；
+- 支付成功只以后端验签通知或主动查询为准；
+- 商品删除使用软删除，不能破坏历史订单快照；
+- Java 后端新增代码遵循中文注释规范。
+
+## 9. 当前阶段与后续阶段
+
+当前阶段的交付标准是：在本地 MySQL 环境中完成消费者下单、模拟支付、商家拣货发货、消费者确认收货或申请售后的完整链路，并通过三个应用的自动测试和生产构建。
+
+后续建议按以下顺序推进：
+
+1. 增加贯穿消费者与商家端的浏览器端到端测试；
+2. 准备预发布环境、Nginx、HTTPS、生产配置、日志和数据库备份；
+3. 在预发布环境联调支付宝沙箱公网回调；
+4. 安全评审后切换支付宝正式环境；
+5. 接入物流回调和微信支付；
+6. 通过受保护的内部接口连接 Python AI 客服、运营 Agent 和数据中台。
+
+## 10. 参考文档
+
+- [README](README.md)
+- [API 文档](docs/api/README.md)
+- [数据库文档](docs/database/README.md)
+- [支付宝沙箱接入](docs/payments/alipay-sandbox.md)
+- [后端架构 ADR](docs/adr/0002-modular-backend-and-security.md)
+- [商家端架构 ADR](docs/adr/0003-separate-merchant-portal-and-identity.md)
+- [后端中文注释规范](docs/development/backend-commenting-guidelines.md)
+- [安全审查报告](docs/security/review-2026-07-22.md)

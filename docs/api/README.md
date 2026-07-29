@@ -15,7 +15,7 @@ Content-Type: application/json
 |---|---|---|
 | 认证 | `POST /api/auth/register` | 邮箱或手机号注册并返回 JWT |
 | 认证 | `POST /api/auth/login` | 邮箱或手机号登录 |
-| 个人资料 | `GET/PATCH /api/me/profile` | 查询或修改当前用户资料 |
+| 个人资料 | `GET/PUT /api/me/profile` | 查询或修改当前用户资料 |
 | 分类 | `GET /api/categories` | 根分类列表，公开 |
 | 品牌 | `GET /api/brands` | 品牌列表，公开 |
 | 商品 | `GET /api/products` | 搜索、筛选、排序与分页，公开 |
@@ -45,6 +45,25 @@ Content-Type: application/json
 | 售后 | `GET /api/after-sales/{afterSaleNo}` | 售后详情与事件时间线 |
 | 售后 | `POST /api/after-sales/{afterSaleNo}/cancel` | 取消待审核售后 |
 | 售后 | `PATCH /api/after-sales/{afterSaleNo}/return-shipment` | 填写本人退货物流 |
+
+## 商家端接口
+
+商家端使用独立 JWT，消费者令牌不能调用以下接口：
+
+| 模块 | 方法与路径 | 说明 |
+|---|---|---|
+| 商家认证 | `POST /api/merchant/auth/login` | 商家员工登录 |
+| 商家账号 | `GET /api/merchant/me` | 查询当前商家员工与权限 |
+| 商家账号 | `POST /api/merchant/me/password` | 修改密码并使旧令牌失效 |
+| 经营看板 | `GET /api/merchant/dashboard` | 查询订单与库存摘要 |
+| 商家订单 | `GET /api/merchant/orders` | 按履约状态或关键字分页查询 |
+| 商家订单 | `GET /api/merchant/orders/{orderNo}` | 查询本商户订单详情 |
+| 商家履约 | `POST /api/merchant/orders/{orderNo}/picking` | 开始拣货 |
+| 商家履约 | `POST /api/merchant/orders/{orderNo}/ship` | 填写物流并确认发货 |
+| 库存中心 | `GET /api/merchant/inventory` | 查询库存或低库存商品 |
+| 商品管理 | `POST /api/merchant/products` | 新增商品、默认 SKU 与库存 |
+| 商品管理 | `PUT /api/merchant/products/{productId}/skus/{skuId}` | 修改商品、SKU 与可售库存 |
+| 商品管理 | `DELETE /api/merchant/products/{productId}` | 软删除商品 |
 
 ## 商品查询参数
 

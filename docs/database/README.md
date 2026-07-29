@@ -28,7 +28,8 @@ src/main/resources/db/migration/
 ├── V1__create_super_mall_schema.sql
 ├── V2__seed_storefront_catalog.sql
 ├── V3__add_order_idempotency.sql
-└── V4__add_alipay_payment_tracking.sql
+├── V4__add_alipay_payment_tracking.sql
+└── V5__add_merchant_operations.sql
 ```
 
 启动应用或运行测试时，Flyway 会自动校验并执行尚未应用的迁移。Hibernate 配置为 `ddl-auto=validate`，只校验 Entity，不再自行建表或改表。
@@ -36,7 +37,7 @@ src/main/resources/db/migration/
 已经被任一环境应用的迁移文件不得原地修改。结构变更必须新增：
 
 ```text
-V3__describe_the_change.sql
+V6__describe_the_change.sql
 ```
 
 禁止在生产环境使用 `flyway clean`，项目已设置 `spring.flyway.clean-disabled=true`。
