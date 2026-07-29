@@ -1,5 +1,7 @@
 # Super Mall
 
+[![CI](https://github.com/atiannewbee/Super_mall/actions/workflows/ci.yml/badge.svg)](https://github.com/atiannewbee/Super_mall/actions/workflows/ci.yml)
+
 这是一个包含消费者商城、商家运营端和 Spring Boot 后端的电商单体仓库。当前实现覆盖账号、商品目录、地址、收藏、购物车、订单、库存、支付宝沙箱支付、受控模拟支付、物流查询、售后，以及商家的待办、拣货、发货和商品库存管理。
 
 ## 项目结构
