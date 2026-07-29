@@ -57,7 +57,7 @@ SQL
 
   TMP_ENV=$(mktemp "${ENV_DIR}/staging.env.XXXXXX")
   cat >"${TMP_ENV}" <<EOF
-DB_URL=jdbc:mysql://127.0.0.1:3306/super_mall_staging?useSSL=false&allowPublicKeyRetrieval=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
+DB_URL=jdbc:mysql://127.0.0.1:3306/super_mall_staging?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
 DB_USERNAME=super_mall_staging
 DB_PASSWORD=${DB_PASSWORD}
 JWT_SECRET=${JWT_SECRET}
@@ -97,6 +97,15 @@ Super Mall 预发布商家账号
 EOF
   install -o root -g root -m 0600 "${TMP_CREDENTIALS}" "${CREDENTIAL_FILE}"
   rm -f "${TMP_CREDENTIALS}"
+fi
+
+# MySQL 8 默认的 caching_sha2_password 在无 TLS 的本机连接上需要取回服务端公钥。
+# 数据库只监听 127.0.0.1，因此允许本机 JDBC 驱动取回公钥不会扩大公网攻击面。
+if grep -q '^DB_URL=.*allowPublicKeyRetrieval=false' "${ENV_FILE}"; then
+  TMP_ENV=$(mktemp "${ENV_DIR}/staging.env.XXXXXX")
+  sed 's/allowPublicKeyRetrieval=false/allowPublicKeyRetrieval=true/' "${ENV_FILE}" >"${TMP_ENV}"
+  install -o root -g "${APP_GROUP}" -m 0640 "${TMP_ENV}" "${ENV_FILE}"
+  rm -f "${TMP_ENV}"
 fi
 
 install -o root -g root -m 0644 \
