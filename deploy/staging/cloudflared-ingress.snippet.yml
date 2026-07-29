@@ -1,0 +1,5 @@
+  # 放在最终的 `service: http_status:404` 规则之前。
+  - hostname: mall-staging.350233.xyz
+    service: http://127.0.0.1:8081
+  - hostname: merchant-staging.350233.xyz
+    service: http://127.0.0.1:8081

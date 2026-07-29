@@ -91,3 +91,6 @@ V1～V5 已执行的 Flyway 文件保持不可变，版本目的和 Review 提�
 - 商家只能访问自己商户名下的订单、库存和履约记录；拣货、发货均有状态机校验和审计日志。
 
 支付宝配置步骤见 [支付宝沙箱接入](docs/payments/alipay-sandbox.md)，完整接口见 [API 文档](docs/api/README.md)，数据库设计见 [数据库文档](docs/database/README.md)，后端架构见 [ADR-0002](docs/adr/0002-modular-backend-and-security.md)，商家端架构见 [ADR-0003](docs/adr/0003-separate-merchant-portal-and-identity.md)，安全审查见 [安全审查报告](docs/security/review-2026-07-22.md)。
+
+预发布服务器的目录、初始化、发布、验证和回滚流程见
+[预发布部署文档](docs/deployment/staging.md)。
