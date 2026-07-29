@@ -46,6 +46,9 @@ apps/**/.env
 apps/**/.env.*
 !apps/**/.env.example
 
+### Deployment build artifacts ###
+.artifacts/
+
 ### Local AI tooling ###
 .reasonix/
 reasonix.toml

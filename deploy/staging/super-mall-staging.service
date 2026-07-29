@@ -1,0 +1,40 @@
+[Unit]
+Description=Super Mall staging backend
+After=network-online.target mysqld.service
+Wants=network-online.target
+Requires=mysqld.service
+
+[Service]
+Type=simple
+User=super-mall
+Group=super-mall
+WorkingDirectory=/var/lib/super-mall
+EnvironmentFile=/etc/super-mall/staging.env
+Environment="JAVA_TOOL_OPTIONS=-Xms128m -Xmx384m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError"
+ExecStart=/usr/bin/java -jar /opt/super-mall/current/super-mall.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=90s
+TimeoutStopSec=30s
+UMask=0027
+
+# 预发布服务只需要读取发布包、连接本机 MySQL 和写入私有工作目录。
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+ReadWritePaths=/var/lib/super-mall
+MemoryMax=700M
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target
