@@ -97,10 +97,10 @@ if ! systemctl restart super-mall-staging.service ||
   exit 1
 fi
 
-# 首次建号完成后，从长期环境文件移除明文初始密码，并重启清理进程环境。
+# 首次建号完成后，移除全部一次性引导参数，避免留下明文密码或半配置状态。
 if grep -q '^MERCHANT_BOOTSTRAP_PASSWORD=' "${ENV_FILE}"; then
   TMP_ENV=$(mktemp /etc/super-mall/staging.env.XXXXXX)
-  grep -v '^MERCHANT_BOOTSTRAP_PASSWORD=' "${ENV_FILE}" >"${TMP_ENV}"
+  grep -Ev '^MERCHANT_BOOTSTRAP_(EMAIL|PASSWORD|NAME)=' "${ENV_FILE}" >"${TMP_ENV}"
   install -o root -g super-mall -m 0640 "${TMP_ENV}" "${ENV_FILE}"
   rm -f "${TMP_ENV}"
   if ! systemctl restart super-mall-staging.service ||
