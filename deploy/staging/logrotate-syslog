@@ -1,0 +1,24 @@
+/var/log/cron
+/var/log/cloud-init.log
+/var/log/cloud-init-output.log
+/var/log/maillog
+/var/log/messages
+/var/log/secure
+/var/log/spooler
+/var/log/syslog
+{
+    daily
+    maxsize 100M
+    maxage 14
+    rotate 7
+    missingok
+    notifempty
+    compress
+    create 0600 root root
+    dateext
+    dateformat -%Y%m%d-%H%M%S
+    sharedscripts
+    postrotate
+        /bin/systemctl kill -s HUP rsyslog.service >/dev/null 2>&1 || true
+    endscript
+}
