@@ -106,6 +106,25 @@ curl -fsS https://merchant-staging.350233.xyz/actuator/health
 4. 商家登录、拣货与发货；
 5. 消费者确认收货或申请售后。
 
+上述浏览器验收已经固化在 `apps/e2e`。本地执行时只把商家凭据临时放入
+当前进程环境变量：
+
+```powershell
+Set-Location apps/e2e
+npm ci
+$env:E2E_MERCHANT_EMAIL = "<预发布商家账号>"
+$env:E2E_MERCHANT_PASSWORD = "<预发布商家密码>"
+npm test
+Remove-Item Env:E2E_MERCHANT_EMAIL,Env:E2E_MERCHANT_PASSWORD
+```
+
+测试失败时，`playwright-report` 和 `test-results` 会保存截图、视频和 trace，
+但包含商家登录的流程会关闭 trace，避免请求体中的密码进入产物。这两个目录
+已经被 Git 忽略。GitHub 的 `Staging E2E` 工作流使用 `staging`
+Environment 中的 `STAGING_MERCHANT_EMAIL`、`STAGING_MERCHANT_PASSWORD`
+并且只能手动运行。测试会生成带 `E2E-` 标识的预发布用户、订单和已软删除
+商品，不得对生产环境执行。
+
 ## 商家初始密码
 
 初始凭据不会输出到 CI、聊天或普通日志。通过受控 SSH 会话读取：

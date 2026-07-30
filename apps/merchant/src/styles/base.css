@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
-
 :root {
   --ink: #171a16;
   --ink-soft: #242820;
@@ -14,8 +12,8 @@
   --blue: #8ac5ff;
   --red: #ff7c68;
   --green: #70d29a;
-  --font-display: 'Barlow Condensed', 'Microsoft YaHei', sans-serif;
-  --font-body: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-display: 'Bahnschrift', 'Arial Narrow', 'Microsoft YaHei', sans-serif;
+  --font-body: 'Aptos', 'Segoe UI', 'Microsoft YaHei', sans-serif;
   --radius: 4px;
   color: var(--ink);
   font-family: var(--font-body);

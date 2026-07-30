@@ -226,7 +226,7 @@ onMounted(async () => {
             <label class="field field--wide"><span>一句话简介</span><input v-model.trim="form.tagline" maxlength="255" /></label>
             <label class="field field--wide"><span>商品说明</span><textarea v-model.trim="form.description" rows="3" maxlength="5000"></textarea></label>
             <label class="field"><span>商品状态</span><select v-model="form.status"><option value="active">立即上架</option><option value="draft">保存草稿</option><option value="inactive">暂时下架</option></select></label>
-            <label class="field"><span>SKU 编码</span><input v-model.trim="form.skuCode" required pattern="[A-Za-z0-9][A-Za-z0-9._-]*" maxlength="80" /></label>
+            <label class="field"><span>SKU 编码</span><input v-model.trim="form.skuCode" required pattern="[A-Za-z0-9][A-Za-z0-9._\-]*" maxlength="80" /></label>
             <label class="field"><span>规格名称</span><input v-model.trim="form.skuLabel" required maxlength="255" /></label>
             <label class="field"><span>售价</span><input v-model="form.price" type="number" required min="0" step="0.01" /></label>
             <label class="field"><span>原价（可选）</span><input v-model="form.originalPrice" type="number" min="0" step="0.01" /></label>
