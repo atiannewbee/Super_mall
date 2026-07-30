@@ -140,6 +140,9 @@ install -o root -g root -m 0644 \
   "${SCRIPT_DIR}/logrotate-mysqld" \
   /etc/logrotate.d/super-mall-mysqld
 install -o root -g root -m 0644 \
+  "${SCRIPT_DIR}/logrotate-syslog" \
+  /etc/logrotate.d/syslog
+install -o root -g root -m 0644 \
   "${SCRIPT_DIR}/logrotate-hourly.conf" \
   /etc/systemd/system/logrotate.timer.d/50-super-mall-hourly.conf
 
@@ -155,6 +158,8 @@ systemctl restart systemd-journald
 systemctl restart logrotate.timer
 journalctl --rotate
 journalctl --vacuum-time=14d --vacuum-size=512M
+# 立即轮换初始化前已经超过 100M 的传统系统日志。
+logrotate --force /etc/logrotate.d/syslog
 systemctl enable super-mall-staging.service
 nginx -t
 systemctl reload nginx
