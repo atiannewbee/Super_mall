@@ -9,7 +9,8 @@
 ## 验收结论
 
 预发布版本已上线，用户端、商家端、后端健康检查和原有个人站点均正常。
-本地构建测试、GitHub CI、依赖安全审计和真实浏览器全链路测试全部通过。
+本地构建测试、GitHub CI、依赖安全审计、本地驱动与 GitHub 远程真实浏览器
+全链路测试全部通过。
 
 ## 自动化结果
 
@@ -19,6 +20,7 @@
 | 消费者端组件测试 | 22/22 通过 |
 | 商家端组件测试 | 4/4 通过 |
 | Playwright 预发布 E2E | 7/7 通过 |
+| GitHub 远程预发布 E2E | 7/7 通过 |
 | GitHub `main` CI | Backend、Storefront、Merchant 全部通过 |
 | npm 官方漏洞库审计 | 三个 JavaScript 工程均为 0 漏洞 |
 
@@ -54,7 +56,9 @@
 - 预发布浏览器验收使用 `super_mall_staging`。
 - E2E 使用独立低权限商家账号，仅有 `OPERATOR`、`WAREHOUSE`，没有 `OWNER`。
 - 凭据只保存在服务器 root 专用文件中，权限为 `0600`，未写入仓库、报告或测试产物。
-- GitHub `staging` Environment 已建立，但两个 E2E Secret 尚未写入，等待站主明确授权。
+- 站主明确授权后，凭据已加密写入 GitHub `staging` Environment Secrets。
+- GitHub 仅保存 `STAGING_MERCHANT_EMAIL`、`STAGING_MERCHANT_PASSWORD` 两个密钥；
+  工作流日志中二者均显示为 `***`。
 
 ## 服务器复核
 
@@ -66,7 +70,13 @@
 - systemd journal 占用约 72.7 MB，`/var/log` 总计约 142 MB。
 - 发布目录仅保留当前版本和两个回滚版本，共 3 个版本。
 
-## 待完成的外部配置
+## GitHub 远程复验
 
-手动触发的 GitHub 预发布 E2E 工作流已经就绪。站主明确同意后，将专用低权限
-E2E 账号写入 GitHub `staging` Environment Secrets，并执行一次远端工作流验收。
+- 工作流运行：<https://github.com/atiannewbee/Super_mall/actions/runs/30513911079>
+- 运行提交：`cb19b941bbb153a0c8dfcc27ab7ed8df5ef4900b`
+- 结果：`Cross-portal acceptance` 成功，7 项测试全部执行。
+- Playwright 证据包：`staging-e2e-30513911079`
+- 证据包大小：6,685,915 bytes，共 27 个文件。
+- 证据包 SHA-256：`88c12f08b96fb311e2fa86d553244ff9ba4e86c2ad910ef5d7c78940c16a8dca`
+- 保留截止日期：2026-08-13。
+- 下载证据包后按专用邮箱和密码原值扫描，两个命中数均为 0。
