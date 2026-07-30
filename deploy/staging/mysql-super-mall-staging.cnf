@@ -4,6 +4,9 @@ bind-address=127.0.0.1
 skip-name-resolve=ON
 local-infile=OFF
 
+# 预发布环境不做复制或基于 binlog 的时间点恢复，关闭后避免事务日志长期增长。
+skip-log-bin
+
 # 服务器只有约 2 GiB 内存，为 Java、Nginx 和现有站点保留空间。
 max-connections=80
 innodb-buffer-pool-size=256M

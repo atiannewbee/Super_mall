@@ -29,12 +29,25 @@ install -d -o root -g root -m 0755 /opt/super-mall/releases
 install -d -o root -g nginx -m 0750 /var/www/super-mall/releases
 install -d -o root -g "${APP_GROUP}" -m 0750 "${ENV_DIR}"
 install -d -o root -g root -m 0755 /etc/nginx/conf.d
+install -d -o root -g root -m 0755 \
+  /etc/systemd/journald.conf.d \
+  /etc/systemd/coredump.conf.d \
+  /etc/systemd/system/logrotate.timer.d
 
-install -o root -g root -m 0644 \
-  "${SCRIPT_DIR}/mysql-super-mall-staging.cnf" \
-  /etc/my.cnf.d/super-mall-staging.cnf
+MYSQL_CONFIG_CHANGED=false
+if ! cmp -s "${SCRIPT_DIR}/mysql-super-mall-staging.cnf" \
+  /etc/my.cnf.d/super-mall-staging.cnf; then
+  install -o root -g root -m 0644 \
+    "${SCRIPT_DIR}/mysql-super-mall-staging.cnf" \
+    /etc/my.cnf.d/super-mall-staging.cnf
+  MYSQL_CONFIG_CHANGED=true
+fi
 
+mysqld --validate-config
 systemctl enable --now mysqld
+if [[ "${MYSQL_CONFIG_CHANGED}" == true ]]; then
+  systemctl restart mysqld
+fi
 
 if [[ ! -s "${ENV_FILE}" ]]; then
   DB_PASSWORD=$(openssl rand -hex 24)
@@ -114,6 +127,21 @@ install -o root -g root -m 0644 \
 install -o root -g root -m 0644 \
   "${SCRIPT_DIR}/nginx-super-mall-staging.conf" \
   /etc/nginx/conf.d/super-mall-staging.conf
+install -o root -g root -m 0644 \
+  "${SCRIPT_DIR}/journald-super-mall.conf" \
+  /etc/systemd/journald.conf.d/50-super-mall-disk-limits.conf
+install -o root -g root -m 0644 \
+  "${SCRIPT_DIR}/coredump-super-mall.conf" \
+  /etc/systemd/coredump.conf.d/50-super-mall-disk-limits.conf
+install -o root -g root -m 0644 \
+  "${SCRIPT_DIR}/logrotate-nginx" \
+  /etc/logrotate.d/nginx
+install -o root -g root -m 0644 \
+  "${SCRIPT_DIR}/logrotate-mysqld" \
+  /etc/logrotate.d/super-mall-mysqld
+install -o root -g root -m 0644 \
+  "${SCRIPT_DIR}/logrotate-hourly.conf" \
+  /etc/systemd/system/logrotate.timer.d/50-super-mall-hourly.conf
 
 if ! grep -Eq '^[[:space:]]*include[[:space:]]+/etc/nginx/conf\.d/\*\.conf;' /etc/nginx/nginx.conf; then
   cp -a /etc/nginx/nginx.conf "/etc/nginx/nginx.conf.bak-$(date +%Y%m%d-%H%M%S)"
@@ -121,7 +149,11 @@ if ! grep -Eq '^[[:space:]]*include[[:space:]]+/etc/nginx/conf\.d/\*\.conf;' /et
 fi
 
 restorecon -RF /var/www/super-mall /opt/super-mall /etc/super-mall 2>/dev/null || true
+logrotate --debug /etc/logrotate.conf >/dev/null
 systemctl daemon-reload
+systemctl restart systemd-journald
+systemctl restart logrotate.timer
+journalctl --vacuum-time=14d --vacuum-size=512M
 systemctl enable super-mall-staging.service
 nginx -t
 systemctl reload nginx

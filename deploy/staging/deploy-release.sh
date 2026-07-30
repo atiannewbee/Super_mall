@@ -13,8 +13,10 @@ fi
 
 ARCHIVE=$1
 RELEASE_ID=$2
-APP_RELEASE=/opt/super-mall/releases/${RELEASE_ID}
-WEB_RELEASE=/var/www/super-mall/releases/${RELEASE_ID}
+APP_RELEASE_ROOT=/opt/super-mall/releases
+WEB_RELEASE_ROOT=/var/www/super-mall/releases
+APP_RELEASE=${APP_RELEASE_ROOT}/${RELEASE_ID}
+WEB_RELEASE=${WEB_RELEASE_ROOT}/${RELEASE_ID}
 APP_CURRENT=/opt/super-mall/current
 WEB_CURRENT=/var/www/super-mall/current
 ENV_FILE=/etc/super-mall/staging.env
@@ -85,6 +87,32 @@ rollback() {
   fi
 }
 
+prune_releases() {
+  local current_id
+  local kept_rollback=0
+  local release_id
+  current_id=$(basename "$(readlink -e "${APP_CURRENT}")")
+
+  while read -r release_id; do
+    [[ "${release_id}" =~ ^[0-9a-f]{7,40}$ ]] || continue
+    [[ -d "${APP_RELEASE_ROOT}/${release_id}" ]] || continue
+    [[ -d "${WEB_RELEASE_ROOT}/${release_id}" ]] || continue
+    if [[ "${release_id}" == "${current_id}" ]]; then
+      continue
+    fi
+    if (( kept_rollback < 2 )); then
+      kept_rollback=$((kept_rollback + 1))
+      continue
+    fi
+    rm -rf -- \
+      "${APP_RELEASE_ROOT}/${release_id}" \
+      "${WEB_RELEASE_ROOT}/${release_id}"
+  done < <(
+    find "${APP_RELEASE_ROOT}" -mindepth 1 -maxdepth 1 -type d \
+      -printf '%T@ %f\n' | sort -nr | cut -d' ' -f2-
+  )
+}
+
 switch_link "${APP_RELEASE}" "${APP_CURRENT}"
 switch_link "${WEB_RELEASE}" "${WEB_CURRENT}"
 
@@ -115,4 +143,5 @@ fi
 
 nginx -t
 systemctl reload nginx
+prune_releases
 echo "Super Mall 预发布版本 ${RELEASE_ID} 已上线。"

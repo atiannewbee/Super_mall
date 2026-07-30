@@ -18,6 +18,9 @@ RestartSec=5s
 TimeoutStartSec=90s
 TimeoutStopSec=30s
 UMask=0027
+LogRateLimitIntervalSec=30s
+LogRateLimitBurst=2000
+LimitCORE=0
 
 # 预发布服务只需要读取发布包、连接本机 MySQL 和写入私有工作目录。
 NoNewPrivileges=true
