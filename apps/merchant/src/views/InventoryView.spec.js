@@ -47,4 +47,14 @@ describe('InventoryView', () => {
       availableQuantity: 6,
     }))
   })
+
+  it('uses a SKU pattern accepted by modern browsers', async () => {
+    const wrapper = mount(InventoryView, { global: { stubs: { Teleport: true } } })
+    await flushPromises()
+    await wrapper.get('button.primary-action').trigger('click')
+
+    const pattern = wrapper.get('input[pattern]').attributes('pattern')
+    expect(() => new RegExp(`^(?:${pattern})$`, 'v')).not.toThrow()
+    expect(new RegExp(`^(?:${pattern})$`, 'v').test('sku-2026_test.1')).toBe(true)
+  })
 })
