@@ -41,7 +41,9 @@ sudo ./deploy/staging/provision.sh
 4. 生成相互独立的消费者、商家 JWT 密钥；
 5. 写入 root-only 初始商家凭据文件；
 6. 安装 systemd 与 Nginx 配置；
-7. 保持真实支付关闭。
+7. 设置日志、core dump 和 Nginx/MySQL 轮转上限；
+8. 关闭预发布不需要的 MySQL binlog；
+9. 保持真实支付关闭。
 
 服务器基线预装了 MariaDB 命令行客户端但没有 MariaDB 服务，同时在 DNF 中过滤
 MySQL 包。初始化脚本会临时绕过该过滤，并只用 MySQL 8 客户端替换冲突的
@@ -84,6 +86,7 @@ sudo /srv/super-mall/deploy/staging/deploy-release.sh \
 ```
 
 发布脚本使用不可变 release 和原子软链接。后端健康检查失败时会自动恢复上一版。
+发布成功后只保留当前版本和最近两个回滚版本。
 
 ## 验证
 
@@ -146,4 +149,15 @@ curl -fsS http://127.0.0.1:18080/actuator/health
 journalctl -u super-mall-staging -n 150 --no-pager
 journalctl -u mysqld -n 100 --no-pager
 tail -100 /var/log/nginx/error.log
+journalctl --disk-usage
+df -h /
 ```
+
+磁盘保护策略：
+
+- systemd journal 总量不超过 `512M`，最多保留 14 天，并始终为磁盘保留 `5G`；
+- Nginx 每小时检查轮转，单个日志达到 `100M` 即轮转，最多保留 10 份；
+- MySQL 错误日志达到 `50M` 即轮转，最多保留 7 份；
+- core dump 总量不超过 `256M`；
+- 预发布关闭 MySQL binlog；正式生产环境必须改用独立的备份与 binlog 策略；
+- 后端只保留当前 release 和最近两个可回滚 release。
