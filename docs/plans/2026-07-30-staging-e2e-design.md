@@ -53,10 +53,11 @@ Cloudflare、后端和数据库，因此不能作为预发布验收依据。
 
 测试遇到失败时自动保留页面截图、视频和 Playwright trace，报告中不得包含
 密码、JWT 或数据库密钥。网络请求失败必须展示接口路径、HTTP 状态和脱敏后
-的响应摘要。每轮测试输出 HTML 报告，并在 GitHub Actions 手动验收任务中
-作为 artifact 保存。
+的响应摘要。包含商家登录的测试关闭 trace，避免网络请求体中的密码进入
+artifact；这两条流程只保留失败截图和录像。公开页面测试仍可保留 trace。
+每轮测试输出 HTML 报告，并在 GitHub Actions 手动验收任务中作为 artifact
+保存。
 
 预发布全链路测试使用手动触发，而不是每次 Pull Request 自动运行，避免未经
 确认地持续创建真实预发布订单。常规 Pull Request 继续运行现有后端和两个
 前端的隔离测试。
-

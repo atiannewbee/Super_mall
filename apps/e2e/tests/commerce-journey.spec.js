@@ -12,6 +12,9 @@ import {
 
 const runtime = readRuntimeConfig()
 
+// Trace 会记录网络请求体；该流程包含商家密码，因此只保留失败截图和录像。
+test.use({ trace: 'off' })
+
 test('消费者下单支付后由商家履约，消费者确认收货并申请售后', async ({ browser, request }) => {
   const merchantCredentials = requireMerchantCredentials(runtime)
   const run = createRunData()

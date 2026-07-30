@@ -119,7 +119,8 @@ Remove-Item Env:E2E_MERCHANT_EMAIL,Env:E2E_MERCHANT_PASSWORD
 ```
 
 测试失败时，`playwright-report` 和 `test-results` 会保存截图、视频和 trace，
-这两个目录已经被 Git 忽略。GitHub 的 `Staging E2E` 工作流使用 `staging`
+但包含商家登录的流程会关闭 trace，避免请求体中的密码进入产物。这两个目录
+已经被 Git 忽略。GitHub 的 `Staging E2E` 工作流使用 `staging`
 Environment 中的 `STAGING_MERCHANT_EMAIL`、`STAGING_MERCHANT_PASSWORD`
 并且只能手动运行。测试会生成带 `E2E-` 标识的预发布用户、订单和已软删除
 商品，不得对生产环境执行。

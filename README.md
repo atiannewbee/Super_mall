@@ -81,6 +81,7 @@ npm test
 商家凭据只能通过环境变量或 GitHub `staging` Environment secrets 提供，不得
 写入 `.env`、测试代码、报告或提交记录。GitHub Actions 的 `Staging E2E`
 工作流只允许手动触发，避免普通 Pull Request 持续向预发布库写入验收订单。
+包含商家登录的测试会关闭 Playwright trace，防止请求体中的凭据进入测试产物。
 
 ## 代码 Review
 
