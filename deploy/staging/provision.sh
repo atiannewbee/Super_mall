@@ -149,10 +149,11 @@ if ! grep -Eq '^[[:space:]]*include[[:space:]]+/etc/nginx/conf\.d/\*\.conf;' /et
 fi
 
 restorecon -RF /var/www/super-mall /opt/super-mall /etc/super-mall 2>/dev/null || true
-logrotate --debug /etc/logrotate.conf >/dev/null
+logrotate --debug /etc/logrotate.conf >/dev/null 2>&1
 systemctl daemon-reload
 systemctl restart systemd-journald
 systemctl restart logrotate.timer
+journalctl --rotate
 journalctl --vacuum-time=14d --vacuum-size=512M
 systemctl enable super-mall-staging.service
 nginx -t
