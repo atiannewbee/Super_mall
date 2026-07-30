@@ -67,6 +67,21 @@ npm run build
 
 后端测试固定使用独立的 `super_mall_test` MySQL 数据库，包含数据库约束、安全边界、目录查询以及注册到售后的完整交易流程，不会读写日常开发使用的 `super_mall` 数据库。测试产生的用户、订单和库存变化均在事务结束时回滚。
 
+预发布环境另有独立的 Playwright 黑盒验收工程，覆盖消费者注册、地址级联、
+下单、模拟支付、商家拣货发货、确认收货、售后以及商品增删改：
+
+```powershell
+Set-Location apps/e2e
+npm ci
+$env:E2E_MERCHANT_EMAIL = "<预发布商家账号>"
+$env:E2E_MERCHANT_PASSWORD = "<预发布商家密码>"
+npm test
+```
+
+商家凭据只能通过环境变量或 GitHub `staging` Environment secrets 提供，不得
+写入 `.env`、测试代码、报告或提交记录。GitHub Actions 的 `Staging E2E`
+工作流只允许手动触发，避免普通 Pull Request 持续向预发布库写入验收订单。
+
 ## 代码 Review
 
 后端 Java 源码使用中文包级、类级和关键业务注释，重点说明模块边界、事务、租户隔离、
