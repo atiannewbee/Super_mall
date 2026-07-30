@@ -1,0 +1,16 @@
+{
+  "name": "super-mall-e2e",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:config": "playwright test tests/config.spec.js",
+    "test:smoke": "playwright test tests/public-smoke.spec.js",
+    "test:journey": "playwright test tests/commerce-journey.spec.js tests/merchant-catalog.spec.js",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.0"
+  }
+}
